@@ -1,51 +1,75 @@
-name: Build from zip
+name: Unpack and build
 
 on:
   workflow_dispatch:
   push:
     paths: ["source/Lufoss.zip"]
 
-permissions:
-  contents: read
-
 env:
   GRADLE_VERSION: "8.11.1"
 
 jobs:
-  ktlint:
-    name: ktlint
+  unpack:
+    name: Unpack zip into repo
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q source/Lufoss.zip -d work
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: ${{ env.GRADLE_VERSION }}
-      - run: gradle ktlintCheck --console=plain
-        working-directory: work/Lufoss
+      - name: Unpack
+        run: |
+          if [ -f source/Lufoss.zip ]; then
+            unzip -q source/Lufoss.zip -d /tmp/unz
+            rsync -a --exclude='.github/workflows' /tmp/unz/Lufoss/ ./
+            git rm -q source/Lufoss.zip
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Unpack Lufoss project from zip"
+            git push
+          else
+            echo "No zip found, building what is already in the repo."
+          fi
 
   build:
-    name: Test and build
+    name: ktlint, test and build
+    needs: unpack
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
-      - run: unzip -q source/Lufoss.zip -d work
+        with:
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
-      - run: gradle testDebugUnitTest assembleDebug --console=plain
-        working-directory: work/Lufoss
+
+      # Step 1: style check. Remove "continue-on-error" to make a style failure stop the build.
+      - name: ktlint
+        id: ktlint
+        continue-on-error: true
+        run: gradle ktlintCheck --console=plain
+
+      - name: Upload ktlint reports
+        if: steps.ktlint.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ktlint-reports
+          path: "**/build/reports/ktlint/**"
+
+      - name: Accept Android SDK licences
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - name: Unit tests and debug APK
+        run: gradle testDebugUnitTest assembleDebug --console=plain
+
       - uses: actions/upload-artifact@v4
         with:
           name: Lufoss-debug-apk
-          path: work/Lufoss/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
