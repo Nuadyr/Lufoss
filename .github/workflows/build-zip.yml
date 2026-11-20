@@ -5,13 +5,19 @@ on:
   push:
     paths: ["source/Lufoss.zip"]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  GRADLE_VERSION: "8.11.1"
+  GRADLE_VERSION: "9.6.0"
+  JAVA_VERSION: "17"
 
 jobs:
   unpack:
     name: Unpack zip into repo
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: write
     steps:
@@ -35,6 +41,7 @@ jobs:
     name: ktlint, test and build
     needs: unpack
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     steps:
@@ -44,7 +51,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ env.JAVA_VERSION }}
       - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
@@ -76,6 +83,7 @@ jobs:
         with:
           name: ktlint-reports
           path: "**/build/reports/ktlint/**"
+          retention-days: 7
 
       - name: Accept Android SDK licences
         run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
@@ -88,3 +96,4 @@ jobs:
           name: Lufoss-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 7
