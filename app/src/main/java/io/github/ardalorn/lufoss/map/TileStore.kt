@@ -21,11 +21,7 @@ import kotlinx.coroutines.withContext
  * Map pictures from OpenStreetMap's standard raster service (XYZ order, free, no key).
  * Everything here runs on the main thread except the download and the decoding.
  */
-class TileStore(
-    private val api: ApiClient,
-    private val scope: CoroutineScope,
-    private val onError: (Boolean) -> Unit
-) {
+class TileStore(private val api: ApiClient, private val scope: CoroutineScope, private val onError: (Boolean) -> Unit) {
     /** Changes whenever a picture arrives, so drawing code that reads it is drawn again. */
     var version by mutableIntStateOf(0)
         private set

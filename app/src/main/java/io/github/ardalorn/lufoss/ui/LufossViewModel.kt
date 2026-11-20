@@ -54,7 +54,9 @@ sealed interface Sheet {
 enum class PermCard { ASK, DENIED }
 
 /** All of the app's state and what the buttons do. The map camera lives in [map]. */
-class LufossViewModel(app: Application) : AndroidViewModel(app), NavListener {
+class LufossViewModel(app: Application) :
+    AndroidViewModel(app),
+    NavListener {
     private val api = ApiClient(File(app.cacheDir, "http"))
     private val geocoder = Geocoder(api)
     private val router = Router(api)

@@ -183,12 +183,7 @@ fun InfoCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.() 
 
 /** The list under a search box. */
 @Composable
-fun SuggestionList(
-    state: Suggest,
-    onPick: (Place) -> Unit,
-    modifier: Modifier = Modifier,
-    maxHeight: Dp = 320.dp
-) {
+fun SuggestionList(state: Suggest, onPick: (Place) -> Unit, modifier: Modifier = Modifier, maxHeight: Dp = 320.dp) {
     if (state is Suggest.Hidden) return
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -295,7 +290,13 @@ fun StepList(route: Route, doneUpTo: Int, nextIdx: Int?, modifier: Modifier = Mo
                     .fillMaxWidth()
                     .padding(vertical = 6.dp)
                     .semantics(mergeDescendants = true) {
-                        val state = if (done) "Done" else if (next) "Next" else ""
+                        val state = if (done) {
+                            "Done"
+                        } else if (next) {
+                            "Next"
+                        } else {
+                            ""
+                        }
                         if (state.isNotEmpty()) stateDescription = state
                     },
                 horizontalArrangement = Arrangement.spacedBy(12.dp),

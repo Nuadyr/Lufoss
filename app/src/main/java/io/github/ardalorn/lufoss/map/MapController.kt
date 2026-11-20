@@ -38,10 +38,7 @@ class MapLayout(
  * While walking it also follows the person's dot, turns the map to their heading and zooms in for turns.
  * All distances are in dp; gestures convert from pixels before calling in.
  */
-class MapController(
-    private val scope: CoroutineScope,
-    private val reducedMotion: () -> Boolean
-) {
+class MapController(private val scope: CoroutineScope, private val reducedMotion: () -> Boolean) {
     var lat by mutableDoubleStateOf(Cfg.START_LAT)
     var lng by mutableDoubleStateOf(Cfg.START_LNG)
     var z by mutableDoubleStateOf(Cfg.START_Z)
