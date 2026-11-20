@@ -26,18 +26,17 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        with:
+          gradle-version: 9.6.0
 
       - name: ktlint check
-        run: ./gradlew ktlintCheck --console=plain
+        run: gradle ktlintCheck --console=plain
 
       - name: Unit tests
-        run: ./gradlew testDebugUnitTest --console=plain
+        run: gradle testDebugUnitTest --console=plain
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --console=plain
+        run: gradle assembleDebug --console=plain
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v7
