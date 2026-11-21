@@ -1,0 +1,27 @@
+Lufoss is a walking navigation app that just works. Search for a place, tap Start, and follow the map and the spoken directions. No account, no API keys, no ads and no tracking.
+
+<b>Find your way</b>
+• Search as you type, including exact house numbers
+• Tap anywhere on the map to drop a pin and get directions
+• Limit suggestions to your own country or search worldwide
+
+<b>Round-trip walks</b>
+• Pick 10, 20, 30, 40, 50 or 60 minutes and get a loop that starts and ends at your saved start point
+• Tap Another route for a different loop
+
+<b>Turn-by-turn walking</b>
+• The map follows you, faces the way you are heading and zooms in for turns
+• Spoken directions at three distances, which you can switch off at any time
+• Automatic re-routing and arrival detection
+• Preview mode lets you walk a route on screen without GPS
+
+<b>Made to be comfortable</b>
+• Smooth pan, pinch-zoom and rotate, with light and dark themes
+• TalkBack, keyboard and reduced-motion support
+
+<b>Private by design</b>
+• No Google Play services needed
+• Only your chosen start point is stored, on your device. Live location is never saved
+• Map data, search and routes come from free OpenStreetMap-based services, and cached results are kept for one hour at most
+
+Map data © OpenStreetMap contributors.
