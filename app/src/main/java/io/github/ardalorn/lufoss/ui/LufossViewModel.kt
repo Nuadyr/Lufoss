@@ -335,7 +335,7 @@ class LufossViewModel(app: Application) :
             }
             if (result == null) {
                 showLoopPicker()
-                fail("No walk could be planned from your start point. Try a different start point.")
+                fail("No walk without U-turns could be planned from your start point. Try a different start point.")
                 return@launch
             }
             route = result.route.asLoop(minutes, result.overlap)
