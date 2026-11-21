@@ -1,5 +1,7 @@
 # Lufoss
 
+Hobbyist project,  expect staggered updates and only at degradation of functionality. 
+
 **Walking navigation that just works. No account, no API keys, no tracking.**
 
 Lufoss is a free Android app that finds a walking route and talks you along it. Search for a place, tap Start, and follow the map. Or pick a time and let Lufoss plan a round-trip walk that brings you back to where you began.
