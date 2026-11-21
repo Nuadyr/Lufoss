@@ -1,73 +1,141 @@
 # Lufoss
 
-Lufoss is a native Android walking-navigation app written in Kotlin with Jetpack Compose. It is a full rewrite of
-the single-file ArWalk web page: same features, same free keyless services, same own-built map engine.
+**Walking navigation that just works. No account, no API keys, no tracking.**
 
-## What it does
+Lufoss is a free Android app that finds a walking route and talks you along it. Search for a place, tap Start, and follow the map. Or pick a time and let Lufoss plan a round-trip walk that brings you back to where you began.
 
-- Draws its own map from OpenStreetMap raster tiles. There is no mapping library: tile maths, caching, touch,
-  rotation and the follow camera are all in `map/` and `ui/MapDraw.kt`.
-- Searches places while you type (Photon), finds exact house numbers on submit (Nominatim, then Overpass), and can
-  limit suggestions to your home country.
-- Plans walking routes (OpenStreetMap Germany routing service) and round-trip walks of 10 to 60 minutes that avoid
-  doubling back.
-- Walks you along the route: follow camera, heading-up map, spoken turns at three distances, automatic re-routing,
-  arrival detection, and a Preview mode that walks the route by itself without GPS.
-- Accessible: screen reader live regions for progress and turns, custom map actions for TalkBack, hardware keyboard
-  and mouse support, reduced-motion support (follows the system animation setting), 48 dp touch targets.
-- Light and dark themes (the Aengus palette). Dark mode also darkens the map tiles.
+---
 
-No Google Play services, no API keys, no analytics. Location comes from the platform `LocationManager`; speech from
-the system text-to-speech engine.
+## Features
 
-## Build without a command line
+### Find your way
+- **Search as you type.** Place suggestions appear while you write.
+- **Exact addresses.** Search for a house number and Lufoss finds the building, not just the street.
+- **Tap to pin.** Tap anywhere on the map to drop a pin and get directions.
+- **Home-country filter.** Limit suggestions to your own country, or search worldwide.
 
-GitHub builds the app for you:
+### Round-trip walks
+- **Choose a time: 10, 20, 30, 40, 50 or 60 minutes.** Lufoss plans a loop that starts and ends at your saved start point.
+- **Loops that avoid doubling back.** If a clean loop can't be found, Lufoss tells you.
+- **Not keen on the route?** Tap **Another route** for a different loop.
 
-1. Create a new repository on github.com.
-2. Unzip Lufoss.zip and upload everything inside the `Lufoss` folder (use **Add file > Upload files** and drag the
-   contents in). Make sure the hidden `.github` folder comes too, because it holds the build workflow.
-3. Open the **Actions** tab. The **Build** workflow starts by itself. You can also start it with **Run workflow**.
-4. When the **Test and build** job finishes, open the run and download the **Lufoss-debug-apk** artifact.
-5. Unzip it, copy the `.apk` to your phone and open it. Android asks once to allow installs from that app.
+### Turn-by-turn walking
+- **Follow camera.** The map follows you, turns to face the way you're heading, and zooms in for turns.
+- **Spoken directions.** Turns are announced at three distances, so you never have to look at the screen. Voice can be switched off at any time.
+- **Automatic re-routing.** Take a wrong turn and Lufoss finds a new way.
+- **Arrival detection.** You are told when you get there.
+- **Preview mode.** Walk the route on screen without GPS. Good for checking a route before you leave.
+- **Look around freely.** Drag the map to explore, and it returns to you after a few seconds.
 
-The app targets API 35 and runs on Android 17.
+### A map that feels good
+- Smooth drag, pinch-to-zoom, two-finger rotate, double-tap zoom.
+- Light and dark themes. Dark mode also darkens the map.
+- Works in portrait and landscape, including wide screens.
 
-Prefer Android Studio? Open the folder, let it sync, and press Run. Nothing else is needed.
+### Accessible by design
+- TalkBack support, including spoken progress and turn updates.
+- Keyboard and mouse support.
+- Respects the system "reduce animations" setting.
+- Large 48 dp touch targets.
 
-### Style (ktlint)
+### Private by default
+- No account, no ads, no analytics.
+- No Google Play services needed.
+- Only your chosen start point is saved, and only on your device. Live location is never stored.
 
-ktlint runs through the `org.jlleitschuh.gradle.ktlint` Gradle plugin. Rules are in `.editorconfig` (Android Kotlin
-style, 120 columns, no trailing commas, Composable functions may be PascalCase). Style problems are reported by the
-**ktlint** job but do not stop the APK building. In Android Studio, Code > Reformat Code fixes most of them.
+---
 
-### Continuous integration
+## Getting started
 
-`.github/workflows/build.yml` runs on every push and pull request:
+1. **Install** the app (see [Install](#install)).
+2. **Set your start point** on first launch. Search for an address, use your GPS position, or choose a spot on the map.
+3. **Pick a destination** by searching or tapping the map. Or tap the **round-trip** button and choose how long you want to walk.
+4. **Tap Start** and follow the voice and the map.
 
-1. **ktlint**: `gradle ktlintCheck`. A failure uploads the reports.
-2. **Test and build** (in parallel): unit tests, then `assembleDebug`, then uploads the debug APK as an artifact.
+> Tip: tap **Steps** at any time to see the full list of turns, and **Voice** to mute or unmute spoken directions.
 
-`.github/dependabot.yml` keeps Gradle dependencies and the actions up to date weekly.
+### Permissions
 
-## Layout
+| Permission | Why |
+| --- | --- |
+| Location | Shows your position and guides you while walking. Only used when you pick GPS as your start point or press Start. |
+| Internet | Loads map tiles, search results and routes. |
+
+---
+
+## Install
+
+**Requirements:** Android 8.0 (API 26) or newer. A GPS is recommended but not required.
+
+### Download a build from GitHub
+1. Open the **Actions** tab of the repository and select the latest successful **Build** run.
+2. Download the APK artifact and unzip it.
+3. Copy the `.apk` to your phone and open it. Android will ask once to allow installs from that source.
+
+### Build it yourself
+1. Install [Android Studio](https://developer.android.com/studio) and open the project folder.
+2. Let Gradle sync, then press **Run**.
+
+Or from the command line (JDK 17 and Gradle required):
+
+```bash
+gradle assembleDebug
+```
+
+The APK is written to `app/build/outputs/apk/debug/`.
+
+---
+
+## Good to know
+
+- **Keep the screen on while walking.** Navigation follows you while Lufoss is on screen, and the screen is kept awake for you. Screen-off navigation is not supported yet.
+- **Needs a data connection** for maps, search and routing. Recently viewed map tiles are cached.
+- **Fix the map.** Spotted a missing path or wrong street? Use **About > Report or correct a map issue** to improve OpenStreetMap for everyone.
+
+## Privacy
+
+Lufoss has no server of its own. To work, it sends your search words and route end points to these free public services:
+
+| Service | Used for |
+| --- | --- |
+| [OpenStreetMap](https://www.openstreetmap.org) | Map tiles |
+| [Photon](https://photon.komoot.io) | Place suggestions |
+| [Nominatim](https://nominatim.openstreetmap.org) | Exact address search |
+| [Overpass](https://overpass-api.de) | Numbered-building lookups |
+| [OpenStreetMap Germany routing](https://routing.openstreetmap.de) | Walking routes |
+
+These services are run by volunteers and ask for light, personal use. Please don't use Lufoss for bulk requests.
+
+---
+
+## For developers
+
+Lufoss is written in Kotlin with Jetpack Compose. The map engine is built in-house, with no mapping library.
 
 ```
 app/src/main/java/io/github/ardalorn/lufoss/
-  Cfg.kt                 every limit, timing and URL (ported from ArWalk's settings block)
-  geo/GeoMath.kt         Web Mercator, bearings, distances
-  data/                  models, HTTP, geocoding, routing, round-trip planner, preferences, wording
-  device/                location, compass, speech
-  map/                   MapController (camera, follow, heading) and TileStore (tile cache)
-  nav/                   NavSession (turn by turn) and RouteMath (progress along a route)
-  ui/                    ViewModel, Compose screen, sheets, dialogs, canvas drawing, gestures
+  Cfg.kt        Every limit, timing and URL in one place
+  geo/          Map and distance maths
+  data/         Search, routing, round-trip planner, preferences
+  device/       Location, compass, speech
+  map/          Camera, follow mode, tile cache
+  nav/          Turn-by-turn and route progress
+  ui/           Screens, sheets, dialogs, map drawing, gestures
 ```
 
-## Notes
+**Run checks locally**
 
-- Fonts: headings use the platform serif face. To match the web page exactly, add Fraunces and Atkinson
-  Hyperlegible to `res/font` and point `ui/Theme.kt` at them.
-- Walking only follows you while the app is on screen (the screen is kept awake). A foreground location service
-  would be the next step for screen-off navigation.
-- Please keep the user agent in `Cfg.USER_AGENT` accurate: the OpenStreetMap services require apps to identify
-  themselves, and their usage policies apply (light, personal use; no bulk requests).
+```bash
+gradle ktlintCheck          # code style
+gradle testDebugUnitTest    # unit tests
+```
+
+GitHub Actions runs style checks, unit tests and a debug build on every push and pull request. Dependabot keeps dependencies up to date weekly.
+
+If you fork the project, please update `USER_AGENT` in `Cfg.kt` so OpenStreetMap services can identify your app.
+
+## License
+
+Released under the [GNU General Public License v3.0](LICENSE).
+
+Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
