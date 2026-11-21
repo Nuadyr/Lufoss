@@ -41,6 +41,7 @@ class LoopPlanner(private val router: Router) {
             val bearing = firstBearing + t * Cfg.LOOP_BEARING_STEP_DEG
             // Straight-line length of each side, as a first guess.
             var r = target * Cfg.LOOP_SPEED_MS / (Cfg.LOOP_SIDES * Cfg.LOOP_DETOUR)
+            var resizes = 0
             for (k in 0 until Cfg.LOOP_REFINES) {
                 currentCoroutineContext().ensureActive()
                 if ((System.nanoTime() - began) / NS_PER_MS > Cfg.LOOP_BUDGET_MS) break@outer
@@ -70,9 +71,17 @@ class LoopPlanner(private val router: Router) {
                     continue
                 }
                 val candidate = LoopCandidate(rt, abs(rt.dur - target) / target, overlapShare(rt), uTurnCount(rt))
-                // A U-turn rules the loop out. Resizing rarely moves a corner off the street that caused it,
-                // so drop this loop and try another direction.
-                if (!allowed(candidate)) break
+                // A U-turn rules the loop out and is never offered. A different size can move a corner off the
+                // street that caused it, so try the near and far edge of the time buffer before dropping the
+                // direction.
+                if (!allowed(candidate)) {
+                    if (resizes >= Cfg.LOOP_UTURN_RESIZES) break
+                    val edge = if (resizes % 2 == 0) -Cfg.LOOP_BUFFER_S else Cfg.LOOP_BUFFER_S
+                    resizes++
+                    val aim = max(target + edge, MIN_AIM_S)
+                    r *= min(Cfg.LOOP_SCALE_MAX, max(Cfg.LOOP_SCALE_MIN, aim / rt.dur))
+                    continue
+                }
                 if (better(candidate, best)) best = candidate
                 // Doubling back cannot be fixed by resizing, so try another direction.
                 if (!isClean(candidate)) break
@@ -85,6 +94,7 @@ class LoopPlanner(private val router: Router) {
 
     companion object {
         private const val NS_PER_MS = 1_000_000L
+        private const val MIN_AIM_S = 60.0
 
         /** Share of the route that passes over ground it already covered a good way back. */
         fun overlapShare(rt: Route): Double {
