@@ -2,6 +2,8 @@ package io.github.ardalorn.lufoss.data
 
 import io.github.ardalorn.lufoss.Cfg
 import io.github.ardalorn.lufoss.geo.GeoMath
+import io.github.ardalorn.lufoss.geo.LatLng
+import java.util.Arrays
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -11,13 +13,17 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 
-/** A loop found by the planner, with how far its time is from the target and how much it doubles back. */
-class LoopCandidate(val route: Route, val err: Double, val overlap: Double)
+/**
+ * A loop found by the planner, with how far its time is from the target, how much it doubles back and how many
+ * U-turns it holds.
+ */
+class LoopCandidate(val route: Route, val err: Double, val overlap: Double, val uTurns: Int = 0)
 
 /**
  * Round-trip walks. The loop is a triangle from the start point through two corners and back. The router times it,
  * then the corners are moved in or out until the walk takes the time chosen. Several directions are tried and the
- * one closest to the chosen time that does not double back over itself wins.
+ * one closest to the chosen time that does not double back over itself wins. A loop with a U-turn in it is never
+ * offered, whatever its time.
  */
 class LoopPlanner(private val router: Router) {
     /**
@@ -47,7 +53,13 @@ class LoopPlanner(private val router: Router) {
                     origin
                 )
                 val rt = try {
-                    router.fetchRoute(stops, "Your start point", tries = 1, timeoutMs = Cfg.LOOP_FETCH_TIMEOUT_MS)
+                    router.fetchRoute(
+                        stops,
+                        "Your start point",
+                        tries = 1,
+                        timeoutMs = Cfg.LOOP_FETCH_TIMEOUT_MS,
+                        noUTurns = true
+                    )
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -57,7 +69,10 @@ class LoopPlanner(private val router: Router) {
                     r *= Cfg.LOOP_FAIL_SHRINK
                     continue
                 }
-                val candidate = LoopCandidate(rt, abs(rt.dur - target) / target, overlapShare(rt))
+                val candidate = LoopCandidate(rt, abs(rt.dur - target) / target, overlapShare(rt), uTurnCount(rt))
+                // A U-turn rules the loop out. Resizing rarely moves a corner off the street that caused it,
+                // so drop this loop and try another direction.
+                if (!allowed(candidate)) break
                 if (better(candidate, best)) best = candidate
                 // Doubling back cannot be fixed by resizing, so try another direction.
                 if (!isClean(candidate)) break
@@ -94,6 +109,47 @@ class LoopPlanner(private val router: Router) {
             }
             return shared / max(1.0, rt.total)
         }
+
+        /**
+         * How many times the walk turns right round to go back the way it came. Counts the router's own U-turn
+         * manoeuvres (including one at a corner of the loop), and any place where the line itself folds back so
+         * that the stretch just before it and the stretch just after it lie along the same bearing.
+         */
+        fun uTurnCount(rt: Route): Int = max(rt.steps.count { it.mod == "uturn" }, foldCount(rt))
+
+        private fun foldCount(rt: Route): Int {
+            val arm = Cfg.LOOP_UTURN_ARM_M
+            var folds = 0
+            var resumeAt = 0.0
+            for (i in 1 until rt.size - 1) {
+                val at = rt.cum[i]
+                if (at < arm || at > rt.total - arm || at < resumeAt) continue
+                val apex = LatLng(rt.lats[i], rt.lngs[i])
+                val back = GeoMath.bearingTo(apex, pointAtDist(rt, at - arm))
+                val ahead = GeoMath.bearingTo(apex, pointAtDist(rt, at + arm))
+                if (abs(GeoMath.angDiff(back, ahead)) <= Cfg.LOOP_UTURN_FOLD_DEG) {
+                    folds++
+                    resumeAt = at + arm // One fold shows up at several neighbouring points; count it once.
+                }
+            }
+            return folds
+        }
+
+        private fun pointAtDist(rt: Route, dist: Double): LatLng {
+            val hit = Arrays.binarySearch(rt.cum, dist)
+            val i = if (hit >= 0) hit else -hit - 1
+            if (i <= 0) return LatLng(rt.lats[0], rt.lngs[0])
+            if (i >= rt.size) return LatLng(rt.lats[rt.size - 1], rt.lngs[rt.size - 1])
+            val span = rt.cum[i] - rt.cum[i - 1]
+            val t = if (span == 0.0) 0.0 else (dist - rt.cum[i - 1]) / span
+            return LatLng(
+                rt.lats[i - 1] + (rt.lats[i] - rt.lats[i - 1]) * t,
+                rt.lngs[i - 1] + (rt.lngs[i] - rt.lngs[i - 1]) * t
+            )
+        }
+
+        /** A loop may be offered only when it holds no U-turn. */
+        fun allowed(c: LoopCandidate): Boolean = c.uTurns == 0
 
         /** A loop with next to no doubling back counts as clean. */
         fun isClean(c: LoopCandidate): Boolean = c.overlap <= Cfg.LOOP_CLEAN_OVERLAP
