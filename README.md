@@ -67,13 +67,12 @@ Lufoss is a free Android app that finds a walking route and talks you along it. 
 
 **Requirements:** Android 8.0 (API 26) or newer. A GPS is recommended but not required.
 
-### Download the app
-1. Open the repository's **Releases** page and download the latest `Lufoss-<version>.apk`.
-2. *(Recommended)* Check the download against the `.sha256` file on the same page:
-   `sha256sum -c Lufoss-<version>.apk.sha256`
-3. Copy the APK to your phone and open it. Android asks once to allow installs from that source.
+### Build it with GitHub (no command line)
+1. Create a repository, upload `Lufoss.zip` to the `source` folder, and commit. The **Unpack and build** workflow unpacks the project and builds the app by itself. You can also start it with **Run workflow** in the **Actions** tab.
+2. When the run finishes, open it and download the **Lufoss-debug-apk** artifact (kept for 7 days).
+3. Unzip it, copy the `.apk` to your phone and open it. Android asks once to allow installs from that source.
 
-Release APKs are signed with the project's release key, so later versions install as updates over earlier ones. Only install builds from the Releases page. The debug builds that CI attaches to ordinary pushes are for developers and are not meant for everyday use.
+This is a debug build made from your own copy of the code, so install only APKs you built yourself or got from someone you trust.
 
 ### Build it yourself
 1. Install [Android Studio](https://developer.android.com/studio) and open the project folder.
@@ -85,7 +84,7 @@ Or from the command line (JDK 17 and Gradle required):
 gradle assembleDebug
 ```
 
-The APK is written to `app/build/outputs/apk/debug/`. A self-built debug APK is signed with your own debug key, so it won't update over an official release (uninstall first).
+The APK is written to `app/build/outputs/apk/debug/`.
 
 ---
 
@@ -119,7 +118,6 @@ Like any internet request, these also see your IP address. These services are ru
 - Android backup is disabled, so your start point isn't copied to cloud backups.
 - Only location and internet permissions are requested, and location is used only while you are navigating or choosing a start point.
 - No account, no ads, no analytics, no third-party SDKs.
-- Release APKs are signed and published with a SHA-256 checksum.
 
 **Reporting a vulnerability.** Please don't open a public issue. Use the repository's **Security > Report a vulnerability** option, or contact the maintainer privately.
 
@@ -148,22 +146,6 @@ gradle testDebugUnitTest    # unit tests
 ```
 
 GitHub Actions runs style checks, unit tests and a debug build on every push and pull request. Dependabot keeps dependencies up to date weekly.
-
-**Publishing a release**
-
-Releases are built and signed by GitHub Actions. The signing key never lives in the repository.
-
-1. Create a release keystore once and keep a safe offline backup. Losing it means users can't update:
-   `keytool -genkeypair -v -keystore release.jks -alias lufoss -keyalg RSA -keysize 4096 -validity 10000`
-2. Add four repository secrets (**Settings > Secrets and variables > Actions**): `KEYSTORE_BASE64` (output of `base64 -w0 release.jks`), `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.
-3. Raise `versionCode` and `versionName` in `app/build.gradle.kts`, commit, then tag and push:
-   `git tag v1.0.1 && git push origin v1.0.1`
-
-The **Release** workflow checks the tag matches `versionName`, runs the tests, builds and signs the APK, verifies the signature, and publishes it with its checksum. It stops if any secret is missing.
-
-To build a signed release locally, set `LUFOSS_KEYSTORE_FILE`, `LUFOSS_KEYSTORE_PASSWORD`, `LUFOSS_KEY_ALIAS` and `LUFOSS_KEY_PASSWORD`, then run `gradle assembleRelease`.
-
-If you fork the project, please update `USER_AGENT` in `Cfg.kt` so OpenStreetMap services can identify your app.
 
 ## License
 

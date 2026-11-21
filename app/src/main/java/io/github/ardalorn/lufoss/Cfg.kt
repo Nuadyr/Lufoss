@@ -15,6 +15,8 @@ object Cfg {
     const val CACHE_MAX_ENTRIES = 250
     const val CACHE_TRIM_TO = 200
     const val HTTP_CACHE_BYTES = 50L * 1024L * 1024L
+    const val HTTP_CACHE_TTL_S = 3_600L // Nothing is served from, or kept in, the disk cache for longer than this.
+    const val HTTP_CACHE_TTL_MS = HTTP_CACHE_TTL_S * 1000L
 
     // ---- Map ----
     const val TILE = 256
