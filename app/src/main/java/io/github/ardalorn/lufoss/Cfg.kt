@@ -163,6 +163,8 @@ object Cfg {
     const val LOOP_CLEAN_OVERLAP = 0.01
     const val LOOP_OVERLAP_MIN_M = 150.0
     const val LOOP_START_ZONE_M = 30.0
+    const val LOOP_UTURN_ARM_M = 20.0 // How far each way along the route to look when checking for a U-turn.
+    const val LOOP_UTURN_FOLD_DEG = 180.0 - TURN_UTURN_DEG // Both arms within this angle means the line folded back.
     const val LOOP_CELL_DEG = 0.0002
     const val LOOP_SCALE_MIN = 0.5
     const val LOOP_SCALE_MAX = 2.0
