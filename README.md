@@ -149,16 +149,6 @@ gradle testReleaseUnitTest  # unit tests
 
 GitHub Actions runs style checks, unit tests and a release build on every push and pull request. Dependabot keeps dependencies up to date weekly.
 
-### Signing your own builds
-
-Signing is optional and only needed to install a CI-built APK on a phone. Without a key the workflows still pass and produce an unsigned release APK. The key never lives in the repository.
-
-1. Use an existing keystore, or create one once and keep a backup. Losing it means you can't update the app:
-   `keytool -genkeypair -v -keystore release.jks -alias lufoss -keyalg RSA -keysize 4096 -validity 10000`
-2. Add four repository secrets (**Settings > Secrets and variables > Actions**): `KEYSTORE_BASE64` (output of `base64 -w0 release.jks`), `KEYSTORE_PASSWORD`, `KEY_ALIAS` and `KEY_PASSWORD`.
-
-The workflows then sign the release APK and check the signature. To sign a local build instead, set `LUFOSS_KEYSTORE_FILE`, `LUFOSS_KEYSTORE_PASSWORD`, `LUFOSS_KEY_ALIAS` and `LUFOSS_KEY_PASSWORD` before running `gradle assembleRelease`. F-Droid builds and signs its own copy, so none of this affects the F-Droid listing.
-
 ## License
 
 Released under the [GNU General Public License v3.0](LICENSE).
