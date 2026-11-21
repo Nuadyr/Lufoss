@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.ardalorn.lufoss"
+    namespace = "io.github.nuadyr.lufoss"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "io.github.ardalorn.lufoss"
+        applicationId = "io.github.nuadyr.lufoss"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

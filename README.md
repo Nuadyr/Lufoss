@@ -128,7 +128,7 @@ Like any internet request, these also see your IP address. These services are ru
 Lufoss is written in Kotlin with Jetpack Compose. The map engine is built in-house, with no mapping library.
 
 ```
-app/src/main/java/io/github/ardalorn/lufoss/
+app/src/main/java/io/github/nuadyr/lufoss/
   Cfg.kt        Every limit, timing and URL in one place (including the one-hour cache limit)
   geo/          Map and distance maths
   data/         Search, routing, round-trip planner, preferences
