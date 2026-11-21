@@ -75,16 +75,21 @@ object RouteParser {
 
 /** Walking routes from the OpenStreetMap Germany routing service (free, no key). */
 class Router(private val api: ApiClient) {
-    /** One walking route through every stop in order. Throws when no route exists. */
+    /**
+     * One walking route through every stop in order. Throws when no route exists. With [noUTurns] the router is
+     * told to keep going straight through each stop instead of turning round there.
+     */
     suspend fun fetchRoute(
         points: List<LatLng>,
         fromName: String,
         tries: Int = Cfg.FETCH_TRIES,
-        timeoutMs: Long = Cfg.FETCH_TIMEOUT_MS
+        timeoutMs: Long = Cfg.FETCH_TIMEOUT_MS,
+        noUTurns: Boolean = false
     ): Route {
         val path = points.joinToString(";") { "${it.lng},${it.lat}" }
+        val straight = if (noUTurns) "&continue_straight=true" else ""
         val body = api.fetchText(
-            "${Cfg.ROUTE_URL}$path?overview=full&geometries=geojson&steps=true",
+            "${Cfg.ROUTE_URL}$path?overview=full&geometries=geojson&steps=true$straight",
             tries = tries,
             timeoutMs = timeoutMs
         )
