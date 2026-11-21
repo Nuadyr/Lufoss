@@ -32,18 +32,41 @@ jobs:
       - name: ktlint check
         run: gradle ktlintCheck --console=plain
 
+      - name: Prepare signing key (optional)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "LUFOSS_KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+          else
+            echo "No signing key configured, so the release APK will be unsigned."
+          fi
+
       - name: Unit tests
-        run: gradle testDebugUnitTest --console=plain
+        run: gradle testReleaseUnitTest --console=plain
 
-      - name: Build debug APK
-        run: gradle assembleDebug --console=plain
+      - name: Build release APK
+        env:
+          LUFOSS_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          LUFOSS_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          LUFOSS_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: gradle assembleRelease --console=plain
 
-      - name: Upload debug APK
+      - name: Verify the APK signature
+        if: env.LUFOSS_KEYSTORE_FILE != ''
+        run: |
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -n 1)
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+          "$apksigner" verify --print-certs "$apk"
+
+      - name: Upload release APK
         uses: actions/upload-artifact@v7
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: Lufoss-release-apk
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+          retention-days: 7
 
       - name: Upload ktlint reports
         if: failure()
@@ -52,3 +75,7 @@ jobs:
           name: ktlint-reports
           path: "**/build/reports/ktlint/**"
           if-no-files-found: ignore
+
+      - name: Remove signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
