@@ -29,6 +29,7 @@ import okhttp3.Response
 class ApiClient(cacheDir: File?) {
     private val cache: Cache? = cacheDir?.let { Cache(it, Cfg.HTTP_CACHE_BYTES) }
     private val stamp: File? = cacheDir?.let { File(it.parentFile, it.name + ".stamp") }
+
     @Volatile
     private var purgedAt: Long = stamp?.takeIf { it.exists() }?.lastModified() ?: 0L
 
