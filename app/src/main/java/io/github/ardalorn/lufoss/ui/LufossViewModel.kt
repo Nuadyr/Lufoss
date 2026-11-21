@@ -255,6 +255,7 @@ class LufossViewModel(app: Application) :
     // ---- Directions ----
 
     fun directions() {
+        if (planning) return
         cancelLoop()
         clearError()
         val s = start
@@ -263,8 +264,15 @@ class LufossViewModel(app: Application) :
             openStart(::directions)
             return
         }
-        viewModelScope.launch {
-            if (getRoute(s)) showRoute() else showPlace()
+        // Runs as the planning job, so the sheet can show progress and Close cancels the request.
+        planning = true
+        loopJob = viewModelScope.launch {
+            val self = coroutineContext[Job]
+            try {
+                if (getRoute(s)) showRoute() else showPlace()
+            } finally {
+                if (loopJob === self) planning = false
+            }
         }
     }
 
