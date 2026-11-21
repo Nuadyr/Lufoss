@@ -71,6 +71,53 @@ class RouteTest {
         assertTrue(LoopPlanner.better(clean, null))
     }
 
+    // Two stops: a walk north, then straight back south over the same street, then east.
+    private val foldJson = """
+        {"routes":[{"distance":237.0,"duration":180.0,
+          "geometry":{"coordinates":[[0.0,51.0],[0.0,51.001],[0.0,51.0005],[0.001,51.0005]]},
+          "legs":[{"steps":[
+            {"distance":111.3,"name":"Spur Road","maneuver":{"type":"depart","bearing_after":0}},
+            {"distance":55.7,"name":"Spur Road","maneuver":{"type":"continue","modifier":"straight"}},
+            {"distance":70.0,"name":"Cross Road","maneuver":{"type":"turn","modifier":"left"}},
+            {"distance":0.0,"name":"","maneuver":{"type":"arrive","bearing_before":90}}]}
+          ]}]}
+    """.trimIndent()
+
+    @Test
+    fun aRouteWithoutAReversalHasNoUTurns() {
+        assertEquals(0, LoopPlanner.uTurnCount(RouteParser.parse(json, points, "Start")))
+    }
+
+    @Test
+    fun aLineThatFoldsBackOnItselfCountsAsAUTurn() {
+        val route = RouteParser.parse(foldJson, points.take(2), "Start")
+        assertEquals(1, LoopPlanner.uTurnCount(route))
+    }
+
+    @Test
+    fun aUTurnTheRouterNamesCounts() {
+        val named = json.replace(
+            """"name":"First Road","maneuver":{"type":"depart","bearing_after":0}""",
+            """"name":"First Road","maneuver":{"type":"turn","modifier":"uturn"}"""
+        )
+        assertEquals(1, LoopPlanner.uTurnCount(RouteParser.parse(named, points, "Start")))
+    }
+
+    @Test
+    fun turningRoundAtACornerOfTheLoopCounts() {
+        val reversed = json.replace(""""bearing_after":90""", """"bearing_after":180""")
+        val route = RouteParser.parse(reversed, points, "Start")
+        assertEquals("uturn", route.steps[1].mod)
+        assertTrue(LoopPlanner.uTurnCount(route) >= 1)
+    }
+
+    @Test
+    fun aLoopWithAUTurnIsNeverAllowed() {
+        val route = RouteParser.parse(json, points, "Start")
+        assertTrue(LoopPlanner.allowed(LoopCandidate(route, 0.3, 0.0)))
+        assertFalse(LoopPlanner.allowed(LoopCandidate(route, 0.0, 0.0, uTurns = 1)))
+    }
+
     @Test
     fun placeRecordPrefersANumberedStreet() {
         val p = placeRecord(51.0, 0.0, "High Street", "12", "High Street", listOf("Ely", "Cambridgeshire"))
