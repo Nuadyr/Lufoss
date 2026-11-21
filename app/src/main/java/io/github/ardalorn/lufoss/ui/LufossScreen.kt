@@ -268,8 +268,15 @@ private fun BoxWithConstraintsScope.SearchColumn(vm: LufossViewModel) {
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { vm.search.submit() }),
             trailingIcon = {
-                IconButton(onClick = vm.search::submit) {
-                    Icon(LufossIcons.search, contentDescription = "Search")
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (vm.search.query.isNotEmpty()) {
+                        IconButton(onClick = { vm.search.onQueryChange("") }) {
+                            Icon(LufossIcons.clear, contentDescription = "Clear search")
+                        }
+                    }
+                    IconButton(onClick = vm.search::submit) {
+                        Icon(LufossIcons.search, contentDescription = "Search")
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
