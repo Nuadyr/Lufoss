@@ -1,6 +1,6 @@
 # Lufoss
 
-Hobbyist project,  expect staggered updates and only at degradation of functionality. 
+Hobbyist project,  expect staggered updates and patches only at degradation of functionality. 
 
 **Walking navigation that just works. No account, no API keys, no tracking.**
 
