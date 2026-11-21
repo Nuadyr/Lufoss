@@ -38,8 +38,14 @@ private fun SheetHint(text: String) {
 fun PlaceSheet(vm: LufossViewModel, dest: Place) {
     SheetTitle(dest.name)
     if (dest.addr.isNotBlank()) SheetHint(dest.addr)
+    if (vm.planning) {
+        LinearProgressIndicator(Modifier.fillMaxWidth())
+        SheetHint("Finding a walking route…")
+    }
     Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-        Button(onClick = vm::directions, modifier = Modifier.weight(1f)) { Text("Directions") }
+        Button(onClick = vm::directions, enabled = !vm.planning, modifier = Modifier.weight(1f)) {
+            Text("Directions")
+        }
         OutlinedButton(onClick = vm::closeSheet, modifier = Modifier.weight(1f)) { Text("Close") }
     }
 }
