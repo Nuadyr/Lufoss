@@ -169,6 +169,8 @@ object Cfg {
     const val LOOP_SCALE_MIN = 0.5
     const val LOOP_SCALE_MAX = 2.0
     const val LOOP_FAIL_SHRINK = 0.7
+    const val LOOP_BUFFER_S = 6 * 60.0 // A loop may run this much over or under the chosen time.
+    const val LOOP_UTURN_RESIZES = 2 // Resizes within the buffer to move a corner off a street that caused a U-turn.
     const val LOOP_BUDGET_MS = 45_000L
     const val LOOP_FETCH_TIMEOUT_MS = 10_000L
     const val LOOP_AHEAD_M = 300.0
