@@ -245,6 +245,8 @@ private fun BoxWithConstraintsScope.Controls(vm: LufossViewModel) {
 
 @Composable
 private fun BoxWithConstraintsScope.SearchColumn(vm: LufossViewModel) {
+    // Read here: inside the Column lambda the compiler hides this scope's maxHeight.
+    val listMax = maxHeight * SEARCH_LIST_SHARE
     Column(
         modifier = Modifier
             .align(Alignment.TopStart)
@@ -275,7 +277,7 @@ private fun BoxWithConstraintsScope.SearchColumn(vm: LufossViewModel) {
         if (vm.home.isNotEmpty()) {
             ToggleChip("Only in ${vm.homeName}", vm.localOnly, vm::toggleLocalOnly)
         }
-        SuggestionList(vm.search.state, vm::pickResult, maxHeight = maxHeight * SEARCH_LIST_SHARE)
+        SuggestionList(vm.search.state, vm::pickResult, maxHeight = listMax)
     }
 }
 
@@ -289,6 +291,8 @@ private fun BoxWithConstraintsScope.BottomPanel(
     onSheetSize: (Double, Double) -> Unit
 ) {
     val density = LocalDensity.current.density
+    // Read here: inside the Column lambda the compiler hides this scope's maxHeight.
+    val sheetMax = maxHeight * SHEET_MAX_SHARE
     val base = if (wide) {
         Modifier.align(Alignment.BottomStart).width(panelWidth + sideMargin)
     } else {
@@ -314,7 +318,7 @@ private fun BoxWithConstraintsScope.BottomPanel(
             SheetSurface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = maxHeight * SHEET_MAX_SHARE)
+                    .heightIn(max = sheetMax)
                     .onSizeChanged { onSheetSize(it.width / density.toDouble(), it.height / density.toDouble()) },
                 wide = wide
             ) {
