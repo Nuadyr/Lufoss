@@ -13,6 +13,7 @@ object LufossIcons {
     val search: ImageVector by lazy {
         build("Search", strokes = listOf("M4.3 10.5a6.2 6.2 0 1 0 12.4 0a6.2 6.2 0 1 0 -12.4 0", "M15.2 15.2l5 5"))
     }
+    val clear: ImageVector by lazy { build("Clear", strokes = listOf("M6 6l12 12M18 6L6 18")) }
     val check: ImageVector by lazy { build("Selected", strokes = listOf("M5 12.5l4.5 4.5L19 7.5")) }
     val plus: ImageVector by lazy { build("Zoom in", strokes = listOf("M12 5v14M5 12h14")) }
     val minus: ImageVector by lazy { build("Zoom out", strokes = listOf("M5 12h14")) }
