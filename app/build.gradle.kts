@@ -16,8 +16,30 @@ android {
         versionName = "1.0.0"
     }
 
+    // Release signing is read from the environment so no secret lives in the repository.
+    // CI provides it when the secrets are set.
+    // Without these variables the release APK is left unsigned, which is what F-Droid expects (it signs its own).
+    val keystorePath = System.getenv("LUFOSS_KEYSTORE_FILE")
+    if (!keystorePath.isNullOrBlank()) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("LUFOSS_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("LUFOSS_KEY_ALIAS")
+                keyPassword = System.getenv("LUFOSS_KEY_PASSWORD")
+            }
+        }
+    }
+
+    // Keeps the APK free of the encrypted dependency list that Google tooling adds. F-Droid asks for this.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -35,6 +57,9 @@ android {
     buildFeatures {
         compose = true
     }
+
+    // Unit tests run against the release build type, so no debug variant is ever compiled.
+    testBuildType = "release"
 
     testOptions {
         unitTests.isReturnDefaultValues = true
