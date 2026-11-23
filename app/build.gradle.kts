@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 3
-        versionName = "v1.0.2"
+        versionName = "1.0.2"
     }
 
     // Release signing is read from the environment so no secret lives in the repository.
