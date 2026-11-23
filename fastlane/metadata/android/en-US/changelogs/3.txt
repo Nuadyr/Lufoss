@@ -1,1 +1,1 @@
-Removes a leftover folder from the repository. No change to how the app works. Fixing 1.0.2 version gradle configuration issues
+Removes a leftover folder from the repository. No change to how the app works.
