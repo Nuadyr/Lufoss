@@ -1,0 +1,1 @@
+Removes leftover duplicate code from the old package name and tidies the build setup. No change to how the app works.
