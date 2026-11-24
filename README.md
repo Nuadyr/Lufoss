@@ -10,11 +10,10 @@ Free Android app. No account, no ads, no tracking.
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.nuadyr.lufoss%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FNuadyr%2FLufoss%22%2C%22author%22%3A%22Nuadyr%22%2C%22name%22%3A%22Lufoss%22%7D"><img src="assets/badges/badge_obtainium.png" alt="Get it on Obtainium: add Lufoss to Obtainium" height="80"></a>
 <a href="https://github.com/kurikomi-labs/komi-store/releases/latest"><img src="assets/badges/install-with-komi-store.svg" alt="Install with Komi Store, formerly GitHub Store" height="80"></a>
 
-[![License: GNU GPL v3.0](https://img.shields.io/github/license/Nuadyr/Lufoss)](LICENSE)
-[![Build status of the main branch](https://github.com/Nuadyr/Lufoss/actions/workflows/build.yml/badge.svg)](https://github.com/Nuadyr/Lufoss/actions/workflows/build.yml)
-[![Requires Android 8.0 or newer](https://img.shields.io/badge/Android-8.0%2B-0d47a1)](#details)
-[![Ads and analytics: none](https://img.shields.io/badge/Ads_and_analytics-none-1b5e20)](#privacy)
-[![Account: not required](https://img.shields.io/badge/Account-not_required-1b5e20)](#privacy)
+<a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-0d47a1" alt="License: GNU GPL version 3" height="28"></a>
+<a href="#details"><img src="https://img.shields.io/badge/Android-8.0%2B-0d47a1" alt="Requires Android 8.0 or newer" height="28"></a>
+<a href="#privacy"><img src="https://img.shields.io/badge/Ads_and_analytics-none-1b5e20" alt="Ads and analytics: none" height="28"></a>
+<a href="#privacy"><img src="https://img.shields.io/badge/Account-not_required-1b5e20" alt="Account: not required" height="28"></a>
 
 </div>
 
@@ -101,7 +100,7 @@ They are run by volunteers and ask for light, personal use. Please don't use Luf
 
 - **Keep the screen on while walking.** Lufoss does this for you. Screen-off navigation isn't supported yet.
 - **Needs a data connection** for maps, search and routes.
-- **Wrong street on the map?** Use **About > Report or correct a map issue** to fix OpenStreetMap for everyone.
+- **Wrong street on the map?** Open **About**, then **Report or correct a map issue**, to fix OpenStreetMap for everyone.
 - **Hobbyist project.** Expect staggered updates, with patches only when something breaks.
 
 ## Details
@@ -111,6 +110,7 @@ They are run by volunteers and ask for light, personal use. Please don't use Luf
 - **Version:** 1.0.3
 - **License:** [GNU GPL v3.0](LICENSE)
 - **Bugs and ideas:** [open an issue](https://github.com/Nuadyr/Lufoss/issues)
-- **Security:** don't open a public issue. Use **Security > Report a vulnerability** on this repository.
+- **Security:** don't open a public issue. Open this repository's **Security** tab and choose **Report a vulnerability**.
+- **Build status:** see the [latest build runs](https://github.com/Nuadyr/Lufoss/actions/workflows/build.yml)
 
 Map data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
