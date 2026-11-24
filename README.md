@@ -14,6 +14,7 @@ Free Android app. No account, no ads, no tracking.
 <a href="#details"><img src="https://img.shields.io/badge/Android-8.0%2B-0d47a1" alt="Requires Android 8.0 or newer" height="28"></a>
 <a href="#privacy"><img src="https://img.shields.io/badge/Ads_and_analytics-none-1b5e20" alt="Ads and analytics: none" height="28"></a>
 <a href="#privacy"><img src="https://img.shields.io/badge/Account-not_required-1b5e20" alt="Account: not required" height="28"></a>
+<a href="#privacy"><img src="https://img.shields.io/badge/Network-HTTPS_only-1b5e20" alt="Network traffic: HTTPS only" height="28"></a>
 
 </div>
 
@@ -78,6 +79,7 @@ Obtainium not opening? Add `https://github.com/Nuadyr/Lufoss` under **Add app**.
 
 - **Only your start point is saved**, privately on your device.
 - **Live location is never stored.**
+- **HTTPS only.** Every service address is HTTPS and plain HTTP is switched off.
 - **Results are cached for one hour at most.**
 - **Permissions:** location (only when you pick GPS or press Start) and internet.
 
